@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZDG Skeleton Sequence - Electron Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            gap: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .video-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        video, canvas {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.recording {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .stats {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .primary {
+            background: #007bff;
+            color: white;
+        }
+        .danger {
+            background: #dc3545;
+            color: white;
+        }
+        .secondary {
+            background: #6c757d;
+            color: white;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ZDG Skeleton Sequence Tagger</h1>
+        
+        <div class="controls">
+            <input type="text" id="tagInput" placeholder="Enter pose tag (e.g., 'waving')" />
+            <button id="startRecording" class="primary">Start Recording</button>
+            <button id="stopRecording" class="danger" disabled>Stop Recording</button>
+            <button id="showStats" class="secondary">Show Stats</button>
+        </div>
+        
+        <div class="status ready" id="status">Ready</div>
+        
+        <div class="video-container">
+            <video id="video" width="640" height="480" autoplay muted></video>
+            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+        </div>
+        
+        <div class="stats" id="stats">
+            <h3>Session Statistics</h3>
+            <p>No data available yet. Start recording to see statistics.</p>
+        </div>
+    </div>
+
+    <script>
+        // This would be the actual usage in an Electron renderer process
+        // For demo purposes, we'll simulate the functionality
+        
+        class PoseRecorderDemo {
+            constructor() {
+                this.isRecording = false;
+                this.currentTag = null;
+                this.sequenceCount = 0;
+                this.totalFrames = 0;
+                this.tags = [];
+                
+                this.setupUI();
+                this.initDemo();
+            }
+            
+            setupUI() {
+                document.getElementById('startRecording').addEventListener('click', () => {
+                    const tag = document.getElementById('tagInput').value.trim();
+                    if (tag) {
+                        this.startRecording(tag);
+                    } else {
+                        alert('Please enter a pose tag');
+                    }
+                });
+                
+                document.getElementById('stopRecording').addEventListener('click', () => {
+                    this.stopRecording();
+                });
+                
+                document.getElementById('showStats').addEventListener('click', () => {
+                    this.showStats();
+                });
+            }
+            
+            async initDemo() {
+                // In a real Electron app, you would:
+                // 1. Initialize camera/video input
+                // 2. Load PoseNet model
+                // 3. Start pose detection loop
+                
+                console.log('Demo initialized. In a real app, this would:');
+                console.log('1. Setup camera access');
+                console.log('2. Load PoseNet model');
+                console.log('3. Start real-time pose detection');
+                console.log('4. Use zdg_skeleton_seq to save tagged sequences');
+                
+                // Show example usage
+                this.showExampleUsage();
+            }
+            
+            startRecording(tag) {
+                this.isRecording = true;
+                this.currentTag = tag;
+                
+                // Update UI
+                document.getElementById('status').textContent = `Recording: ${tag}`;
+                document.getElementById('status').className = 'status recording';
+                document.getElementById('startRecording').disabled = true;
+                document.getElementById('stopRecording').disabled = false;
+                
+                console.log(`Started recording poses for tag: ${tag}`);
+                
+                // In real app, you would start collecting pose data here
+                this.simulateRecording();
+            }
+            
+            stopRecording() {
+                this.isRecording = false;
+                
+                // Update UI
+                document.getElementById('status').textContent = 'Ready';
+                document.getElementById('status').className = 'status ready';
+                document.getElementById('startRecording').disabled = false;
+                document.getElementById('stopRecording').disabled = true;
+                
+                console.log('Stopped recording');
+                
+                // Simulate saving sequence
+                this.simulateSaveSequence();
+            }
+            
+            simulateRecording() {
+                // Simulate pose data collection
+                if (this.isRecording) {
+                    console.log('Collecting pose data...');
+                    setTimeout(() => this.simulateRecording(), 1000);
+                }
+            }
+            
+            simulateSaveSequence() {
+                // Simulate successful save
+                this.sequenceCount++;
+                this.totalFrames += Math.floor(Math.random() * 50) + 10; // 10-60 frames
+                
+                if (!this.tags.includes(this.currentTag)) {
+                    this.tags.push(this.currentTag);
+                }
+                
+                console.log(`Sequence saved: ${this.currentTag}`);
+                
+                // Clear tag input
+                document.getElementById('tagInput').value = '';
+            }
+            
+            showStats() {
+                const statsDiv = document.getElementById('stats');
+                statsDiv.innerHTML = `
+                    <h3>Session Statistics</h3>
+                    <p><strong>Sequences:</strong> ${this.sequenceCount}</p>
+                    <p><strong>Total Frames:</strong> ${this.totalFrames}</p>
+                    <p><strong>Tags:</strong> ${this.tags.join(', ') || 'None'}</p>
+                    <p><strong>Average Frames per Sequence:</strong> ${this.sequenceCount > 0 ? Math.round(this.totalFrames / this.sequenceCount) : 0}</p>
+                `;
+            }
+            
+            showExampleUsage() {
+                console.log(`
+Example usage in real Electron app:
+
+// In your pose detection loop:
+const { addSequence } = require('zdg_skeleton_seq');
+
+const handlePoseDetected = async (poses) => {
+  if (isRecording && currentTag) {
+    const frameData = captureCurrentFrame();
+    
+    const result = await addSequence(
+      'training_session_1',      // session name
+      \`sequence_\${Date.now()}\`,  // sequence identifier  
+      poses,                     // PoseNet output
+      currentTag,                // action tag
+      frameData,                 // base64 image (optional)
+      { 
+        saveFrame: true,         // save reference image
+        normalizeScale: true     // normalize coordinates
+      }
+    );
+    
+    if (result.success) {
+      console.log('Sequence saved:', result.data.id);
+      updateUI(result.data);
+    } else {
+      console.error('Save failed:', result.error);
+    }
+  }
+};
+
+// Data will be saved to:
+// ./data/sessions/training_session_1/sequences.jsonl
+// ./data/sessions/training_session_1/frames/[images].jpg
+// ./data/sessions/training_session_1/metadata.json
+                `);
+            }
+        }
+        
+        // Initialize demo when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PoseRecorderDemo();
+        });
+    </script>
+</body>
+</html>
